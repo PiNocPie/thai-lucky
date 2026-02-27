@@ -1,26 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --gold: #D4A017;
+  --gold-light: #F5D76E;
+  --gold-dark: #8B6914;
+  --deep-red: #6B0F1A;
+  --crimson: #9B1C31;
+  --temple-bg: #0D0600;
+  --card-bg: rgba(20, 8, 0, 0.85);
+  --glow-gold: 0 0 30px rgba(212, 160, 23, 0.6), 0 0 60px rgba(212, 160, 23, 0.3);
+  --glow-red: 0 0 20px rgba(107, 15, 26, 0.8);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--temple-bg);
+  color: #f5e6c8;
+  font-family: 'Sarabun', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animated starfield background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(212, 160, 23, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(107, 15, 26, 0.2) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Gold shimmer animation */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: var(--glow-gold); }
+  50% { box-shadow: 0 0 50px rgba(212, 160, 23, 0.9), 0 0 100px rgba(212, 160, 23, 0.4); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes particle {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+}
+
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
+.animate-spin-slow { animation: spin-slow 20s linear infinite; }
+.animate-fade-up { animation: fade-up 0.8s ease-out forwards; }
+
+/* Gold gradient text */
+.text-gold {
+  background: linear-gradient(135deg, #D4A017 0%, #F5D76E 40%, #D4A017 60%, #8B6914 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+.text-gold-static {
+  background: linear-gradient(135deg, #D4A017, #F5D76E, #D4A017);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Premium card */
+.card-premium {
+  background: linear-gradient(145deg, rgba(30, 10, 0, 0.95), rgba(15, 5, 0, 0.98));
+  border: 1px solid rgba(212, 160, 23, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(212, 160, 23, 0.1), inset 0 1px 0 rgba(212, 160, 23, 0.2);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-premium::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 160, 23, 0.8), transparent);
+}
+
+/* Lucky number display */
+.lucky-number {
+  font-family: 'Kanit', 'Sarabun', sans-serif;
+  font-weight: 700;
+  background: linear-gradient(135deg, #D4A017, #F5D76E, #D4A017);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(212, 160, 23, 0.8));
+}
+
+/* Premium button */
+.btn-gold {
+  background: linear-gradient(135deg, #8B6914, #D4A017, #F5D76E, #D4A017, #8B6914);
+  background-size: 300% auto;
+  color: #0D0600;
+  font-weight: 700;
+  font-family: 'Sarabun', sans-serif;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 36px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: shimmer 3s linear infinite;
+  box-shadow: 0 4px 30px rgba(212, 160, 23, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(212, 160, 23, 0.8);
+}
+
+/* Ornamental divider */
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: rgba(212, 160, 23, 0.5);
+  font-size: 20px;
+}
+.ornament::before, .ornament::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 160, 23, 0.5), transparent);
+}
+
+/* Lotus particles */
+.particle {
+  position: fixed;
+  pointer-events: none;
+  font-size: 20px;
+  animation: particle 8s linear infinite;
+  opacity: 0;
+}
+
+/* Thai pattern border */
+.thai-border {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+.thai-border::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #D4A017, #8B6914, #D4A017, #8B6914);
+  z-index: -1;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0D0600; }
+::-webkit-scrollbar-thumb { background: #D4A017; border-radius: 3px; }
+
+/* Number circle */
+.number-circle {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(212, 160, 23, 0.15), rgba(212, 160, 23, 0.05));
+  border: 2px solid rgba(212, 160, 23, 0.5);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 20px rgba(212, 160, 23, 0.3);
+  font-family: 'Kanit', 'Sarabun', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #F5D76E;
+}
+
+/* Color swatch */
+.color-dot {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 3px solid rgba(212, 160, 23, 0.5);
+  box-shadow: 0 0 20px rgba(212, 160, 23, 0.3);
 }
