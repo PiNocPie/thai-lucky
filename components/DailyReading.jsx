@@ -44,6 +44,8 @@ function LoadingSkeleton() {
 
 export default function DailyReading({ birthDate, onBack }) {
   const [reading, setReading] = useState(null);
+  const [aiReading, setAiReading] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     const today = new Date();
@@ -54,11 +56,38 @@ export default function DailyReading({ birthDate, onBack }) {
     const affirmation = getDailyAffirmation(data.lifePathNumber, today.getDay());
     const wanChong    = getWanChong(data.zodiac.key, today);
     setReading({ ...data, auspiciousTimes: times, domains, weekDays, affirmation, wanChong });
+
+    // Fetch Gemini AI reading
+    setAiLoading(true);
+    fetch("/api/reading", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lifePathNumber: data.lifePathNumber,
+        zodiacTh: data.zodiac.th,
+        zodiacEn: data.zodiac.en,
+        element: data.zodiac.element,
+        dayOfWeek: today.getDay(),
+      }),
+    })
+      .then(r => r.json())
+      .then(ai => { if (!ai.error) setAiReading(ai); })
+      .catch(() => {})
+      .finally(() => setAiLoading(false));
   }, [birthDate]);
 
   if (!reading) return <LoadingSkeleton />;
 
-  const { zodiac, dayColor, direction, fortunes, luckyNumbers, auspiciousTimes, date, domains, weekDays, affirmation, wanChong } = reading;
+  const { zodiac, dayColor, direction, luckyNumbers, auspiciousTimes, date, domains, weekDays, wanChong } = reading;
+
+  // Use AI content if available, fall back to hardcoded
+  const fortunes   = aiReading?.fortunes   ?? reading.fortunes;
+  const affirmation = aiReading?.affirmation ?? reading.affirmation;
+  const aiDomains = aiReading ? [
+    { ...domains[0], detail: aiReading.love },
+    { ...domains[1], detail: aiReading.career },
+    { ...domains[2], detail: aiReading.money },
+  ] : domains;
 
   return (
     <div style={{ minHeight: "100vh", padding: "40px 20px", maxWidth: "800px", margin: "0 auto" }}>
@@ -77,6 +106,27 @@ export default function DailyReading({ birthDate, onBack }) {
       }}>
         ← กลับ
       </button>
+
+      {/* AI loading badge */}
+      {aiLoading && (
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          gap: "8px", marginBottom: "16px",
+          color: "rgba(212,160,23,0.5)", fontSize: "12px", letterSpacing: "2px",
+        }}>
+          <span style={{ animation: "shimmer 1.5s infinite", display: "inline-block" }}>✦</span>
+          กำลังประมวลผลดวงชะตาจาก AI...
+        </div>
+      )}
+      {aiReading && (
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          gap: "8px", marginBottom: "16px",
+          color: "rgba(130,200,130,0.6)", fontSize: "12px", letterSpacing: "1px",
+        }}>
+          ✅ คำทำนายโดย Gemini AI · อัปเดตแล้ว
+        </div>
+      )}
 
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: "40px" }}>
@@ -146,7 +196,7 @@ export default function DailyReading({ birthDate, onBack }) {
       <LoveOracle lifePathNumber={reading.lifePathNumber} />
 
       {/* ④ 3-Domain reading */}
-      <DomainReading domains={domains} />
+      <DomainReading domains={aiDomains} />
 
       {/* ⑤ Weekly calendar */}
       <WeeklyCalendar weekDays={weekDays} />
@@ -194,6 +244,26 @@ export default function DailyReading({ birthDate, onBack }) {
           </div>
         ))}
       </div>
+
+      {/* AI warning tip */}
+      {aiReading?.warning && (
+        <div style={{
+          background: "rgba(212,160,23,0.06)",
+          border: "1px solid rgba(212,160,23,0.2)",
+          borderRadius: "16px",
+          padding: "18px 24px",
+          marginBottom: "24px",
+          display: "flex",
+          gap: "12px",
+          alignItems: "flex-start",
+        }}>
+          <span style={{ fontSize: "20px" }}>🔮</span>
+          <div>
+            <p style={{ color: "rgba(212,160,23,0.6)", fontSize: "11px", letterSpacing: "2px", marginBottom: "4px" }}>ข้อแนะนำวันนี้</p>
+            <p style={{ color: "rgba(245,214,160,0.75)", fontSize: "14px", lineHeight: 1.7 }}>{aiReading.warning}</p>
+          </div>
+        </div>
+      )}
 
       {/* ⑧ Auspicious times */}
       <div className="card-premium" style={{ padding: "28px", marginBottom: "40px" }}>
