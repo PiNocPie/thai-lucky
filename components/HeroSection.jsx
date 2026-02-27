@@ -203,29 +203,6 @@ export default function HeroSection({ onSubmit }) {
         </form>
       </div>
 
-      {/* Stats */}
-      <div style={{
-        display: "flex",
-        gap: "48px",
-        marginTop: "56px",
-        flexWrap: "wrap",
-        justifyContent: "center",
-      }}>
-        {[
-          { num: "120K+", label: "ผู้ใช้งาน" },
-          { num: "4.9★", label: "คะแนนรีวิว" },
-          { num: "98%", label: "แม่นยำ" },
-        ].map(s => (
-          <div key={s.label} style={{ textAlign: "center" }}>
-            <div className="text-gold-static" style={{
-              fontFamily: "'Cinzel Decorative', serif",
-              fontSize: "28px",
-              fontWeight: 700,
-            }}>{s.num}</div>
-            <div style={{ fontSize: "13px", color: "rgba(245,214,160,0.5)", marginTop: "4px" }}>{s.label}</div>
-          </div>
-        ))}
-      </div>
 
       {/* Scroll indicator */}
       <div style={{

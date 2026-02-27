@@ -63,10 +63,7 @@ export default function DailyReading({ birthDate, onBack }) {
         <div className="ornament" style={{ marginTop: "20px" }}>✦</div>
       </div>
 
-      {/* ① Affirmation — hook them emotionally first */}
-      <AffirmationCard affirmation={affirmation} luckyNumbers={luckyNumbers} />
-
-      {/* ② Lucky Numbers — hero */}
+      {/* ① Lucky Numbers — hero */}
       <div className="card-premium" style={{ padding: "36px", marginBottom: "24px", textAlign: "center" }}>
         <p style={{ fontSize: "12px", letterSpacing: "4px", color: "rgba(212,160,23,0.6)", textTransform: "uppercase", marginBottom: "20px" }}>
           ✦ เลขมงคลประจำวัน ✦
@@ -169,6 +166,9 @@ export default function DailyReading({ birthDate, onBack }) {
           ))}
         </div>
       </div>
+
+      {/* Affirmation + Social Share — bottom */}
+      <AffirmationCard affirmation={affirmation} luckyNumbers={luckyNumbers} />
 
       {/* Premium CTA */}
       <div className="card-premium animate-glow-pulse" style={{
