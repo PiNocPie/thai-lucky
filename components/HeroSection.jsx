@@ -204,24 +204,6 @@ export default function HeroSection({ onSubmit }) {
       </div>
 
 
-      {/* Scroll indicator */}
-      <div style={{
-        position: "absolute",
-        bottom: "32px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "8px",
-        opacity: 0.4,
-        fontSize: "12px",
-        letterSpacing: "2px",
-        color: "#D4A017",
-      }}>
-        <span>เลื่อนดูเพิ่มเติม</span>
-        <span style={{ fontSize: "20px" }}>▾</span>
-      </div>
     </section>
   );
 }
