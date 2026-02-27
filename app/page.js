@@ -5,6 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import PricingSection from "@/components/PricingSection";
 import MeritSection from "@/components/MeritSection";
 import StreakPopup from "@/components/StreakPopup";
+import CoupleCompatibility from "@/components/CoupleCompatibility";
 
 export default function Home() {
   const [birthDate, setBirthDate] = useState(null);
@@ -42,6 +43,7 @@ export default function Home() {
       {!showReading ? (
         <>
           <HeroSection onSubmit={handleSubmit} />
+          <CoupleCompatibility />
           <MeritSection />
           <PricingSection />
 

@@ -2,13 +2,45 @@
 import { useEffect, useState } from "react";
 import {
   getDailyReading, getAuspiciousTimes,
-  getDomainReadings, getWeeklyCalendar, getDailyAffirmation,
+  getDomainReadings, getWeeklyCalendar, getDailyAffirmation, getWanChong,
 } from "@/lib/astrology";
 import DomainReading from "./DomainReading";
 import WeeklyCalendar from "./WeeklyCalendar";
 import AffirmationCard from "./AffirmationCard";
 import LoveOracle from "./LoveOracle";
 import TarotOracle from "./TarotOracle";
+import ShareCard from "./ShareCard";
+import LotteryDraw from "./LotteryDraw";
+
+function LoadingSkeleton() {
+  const bar = (w, h = 16, mb = 12) => (
+    <div style={{
+      width: w, height: h, borderRadius: 8, marginBottom: mb,
+      background: "linear-gradient(90deg, rgba(212,160,23,0.08) 25%, rgba(212,160,23,0.16) 50%, rgba(212,160,23,0.08) 75%)",
+      backgroundSize: "200% 100%",
+      animation: "shimmer 1.5s infinite",
+    }} />
+  );
+  return (
+    <div style={{ minHeight: "100vh", padding: "40px 20px", maxWidth: "800px", margin: "0 auto" }}>
+      <div style={{ textAlign: "center", marginBottom: "40px" }}>
+        <div style={{ fontSize: "40px", marginBottom: "16px" }}>🪷</div>
+        {bar("60%", 32, 16)}
+        {bar("40%", 16, 0)}
+      </div>
+      {[1,2,3].map(i => (
+        <div key={i} className="card-premium" style={{ padding: "36px", marginBottom: "24px" }}>
+          {bar("50%", 14, 20)}
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", marginBottom: 16 }}>
+            {[1,2,3].map(j => <div key={j} style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(212,160,23,0.1)", animation: "shimmer 1.5s infinite" }} />)}
+          </div>
+          {bar("80%", 14, 8)}
+          {bar("60%", 14, 0)}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function DailyReading({ birthDate, onBack }) {
   const [reading, setReading] = useState(null);
@@ -20,20 +52,13 @@ export default function DailyReading({ birthDate, onBack }) {
     const domains     = getDomainReadings(data.lifePathNumber, today.getDay());
     const weekDays    = getWeeklyCalendar(data.lifePathNumber, today);
     const affirmation = getDailyAffirmation(data.lifePathNumber, today.getDay());
-    setReading({ ...data, auspiciousTimes: times, domains, weekDays, affirmation });
+    const wanChong    = getWanChong(data.zodiac.key, today);
+    setReading({ ...data, auspiciousTimes: times, domains, weekDays, affirmation, wanChong });
   }, [birthDate]);
 
-  if (!reading) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div className="text-gold animate-glow-pulse" style={{ fontFamily: "'Cinzel Decorative', serif", fontSize: "24px" }}>
-          กำลังดูดวง...
-        </div>
-      </div>
-    );
-  }
+  if (!reading) return <LoadingSkeleton />;
 
-  const { zodiac, dayColor, direction, fortunes, luckyNumbers, auspiciousTimes, date, domains, weekDays, affirmation } = reading;
+  const { zodiac, dayColor, direction, fortunes, luckyNumbers, auspiciousTimes, date, domains, weekDays, affirmation, wanChong } = reading;
 
   return (
     <div style={{ minHeight: "100vh", padding: "40px 20px", maxWidth: "800px", margin: "0 auto" }}>
@@ -62,6 +87,30 @@ export default function DailyReading({ birthDate, onBack }) {
         <p style={{ color: "rgba(245,214,160,0.6)", marginTop: "8px", fontSize: "15px" }}>{date.be}</p>
         <div className="ornament" style={{ marginTop: "20px" }}>✦</div>
       </div>
+
+      {/* วันชง warning */}
+      {wanChong.isWanChong && (
+        <div style={{
+          background: "linear-gradient(135deg, rgba(180,30,30,0.15), rgba(120,0,0,0.2))",
+          border: "1px solid rgba(255,80,80,0.4)",
+          borderRadius: "16px",
+          padding: "20px 24px",
+          marginBottom: "24px",
+          display: "flex",
+          gap: "16px",
+          alignItems: "flex-start",
+        }}>
+          <span style={{ fontSize: "28px", flexShrink: 0 }}>⚠️</span>
+          <div>
+            <p style={{ color: "#FF8A80", fontWeight: 700, fontSize: "15px", marginBottom: "6px", fontFamily: "'Sarabun', sans-serif" }}>
+              วันนี้เป็นวันชงของปี{zodiac.th}
+            </p>
+            <p style={{ color: "rgba(245,180,160,0.7)", fontSize: "13px", lineHeight: 1.7 }}>
+              {wanChong.tip}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* ① Lucky Numbers — hero */}
       <div className="card-premium" style={{ padding: "36px", marginBottom: "24px", textAlign: "center" }}>
@@ -166,6 +215,12 @@ export default function DailyReading({ birthDate, onBack }) {
           ))}
         </div>
       </div>
+
+      {/* เลขเด็ด งวดนี้ */}
+      <LotteryDraw luckyNumbers={luckyNumbers} />
+
+      {/* Share card */}
+      <ShareCard luckyNumbers={luckyNumbers} zodiac={zodiac} date={date} />
 
       {/* Affirmation + Social Share — bottom */}
       <AffirmationCard affirmation={affirmation} luckyNumbers={luckyNumbers} />

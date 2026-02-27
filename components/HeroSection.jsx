@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const MONTHS_TH = [
   "มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน",
@@ -36,18 +36,37 @@ const inputStyle = {
 };
 
 export default function HeroSection({ onSubmit }) {
-  const [day, setDay]     = useState("");
-  const [month, setMonth] = useState("");
+  const [day, setDay]       = useState("");
+  const [month, setMonth]   = useState("");
   const [beYear, setBeYear] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError]   = useState("");
+  const [hasSaved, setHasSaved] = useState(false);
+
+  // Load saved birth date on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("savedBirthDate");
+      if (saved) {
+        const d = new Date(saved);
+        if (!isNaN(d)) {
+          setDay(String(d.getDate()));
+          setMonth(String(d.getMonth() + 1));
+          setBeYear(String(d.getFullYear() + 543));
+          setHasSaved(true);
+        }
+      }
+    } catch {}
+  }, []);
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!day || !month || !beYear) { setError("กรุณาเลือกวัน เดือน และปีเกิด"); return; }
     setError("");
     const ceYear = parseInt(beYear) - 543;
-    const ceMonth = parseInt(month) - 1; // 0-indexed
+    const ceMonth = parseInt(month) - 1;
     const dateObj = new Date(ceYear, ceMonth, parseInt(day));
+    // Save to localStorage
+    try { localStorage.setItem("savedBirthDate", dateObj.toISOString()); } catch {}
     onSubmit(dateObj);
   }
 
@@ -194,6 +213,11 @@ export default function HeroSection({ onSubmit }) {
             </div>
           </div>
 
+          {hasSaved && (
+            <p style={{ color: "rgba(212,160,23,0.6)", fontSize: "12px", textAlign: "center", marginBottom: "4px", letterSpacing: "1px" }}>
+              ✦ จำวันเกิดของคุณไว้แล้ว
+            </p>
+          )}
           {error && (
             <p style={{ color: "#FF6B6B", fontSize: "13px", marginBottom: "4px", textAlign: "center" }}>{error}</p>
           )}
